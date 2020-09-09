@@ -2,10 +2,7 @@ package com.funrisestudio.stories
 
 import android.content.Context
 import android.util.AttributeSet
-import android.view.View
 import android.widget.LinearLayout
-import androidx.core.view.children
-import java.util.*
 
 class StoriesSequenceView @JvmOverloads constructor(
     context: Context,
@@ -17,6 +14,8 @@ class StoriesSequenceView @JvmOverloads constructor(
 
     private var activeProgressView: ProgressView? = null
     private var storiesIterator = StoriesIterator()
+
+    var onStoryCompleted: (() -> Unit)? = null
 
     init {
         orientation = HORIZONTAL
@@ -53,20 +52,34 @@ class StoriesSequenceView @JvmOverloads constructor(
         activeProgressView?.resume()
     }
 
-    fun next() {
+    fun hasNext() = storiesIterator.hasNext()
+
+    fun nextIndex() = storiesIterator.nextIndex()
+
+    fun completeCurrent() {
         activeProgressView?.setCompleted()
-        if (storiesIterator.hasNext()) {
-            activeProgressView = storiesIterator.next()
-            activeProgressView?.start(onCompleted = ::next)
-        }
+    }
+
+    fun next() {
+        activeProgressView = storiesIterator.next()
+        activeProgressView?.start(onCompleted = ::onStoryCompleted)
+    }
+
+    fun hasPrevious() = storiesIterator.hasPrevious()
+
+    fun previousIndex() = storiesIterator.previousIndex()
+
+    fun unCompleteCurrent() {
+        activeProgressView?.setUncompleted()
     }
 
     fun previous() {
-        activeProgressView?.setUncompleted()
-        if (storiesIterator.hasPrevious()) {
-            activeProgressView = storiesIterator.previous()
-        }
-        activeProgressView?.start(onCompleted = ::next)
+        activeProgressView = storiesIterator.previous()
+        activeProgressView?.start(onCompleted = ::onStoryCompleted)
+    }
+
+    private fun onStoryCompleted() {
+        onStoryCompleted?.invoke()
     }
 
     inner class StoriesIterator : ListIterator<ProgressView> {

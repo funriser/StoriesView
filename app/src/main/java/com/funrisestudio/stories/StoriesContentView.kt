@@ -5,6 +5,7 @@ import android.graphics.drawable.Drawable
 import android.util.AttributeSet
 import android.util.Log
 import android.view.MotionEvent
+import android.view.View
 import android.widget.FrameLayout
 import android.widget.ImageView
 import com.bumptech.glide.load.DataSource
@@ -21,6 +22,12 @@ class StoriesContentView @JvmOverloads constructor(
     attrs: AttributeSet? = null
 ) : FrameLayout(context, attrs) {
 
+    private val backedImageView: ImageView = ImageView(context).also {
+        it.layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
+        it.scaleType = ImageView.ScaleType.CENTER_CROP
+        it.visibility = View.INVISIBLE
+        addView(it)
+    }
     private val contentView: ImageView = ImageView(context).also {
         it.layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
         it.scaleType = ImageView.ScaleType.CENTER_CROP
@@ -105,7 +112,13 @@ class StoriesContentView @JvmOverloads constructor(
     }
 
     private fun renderContent(index: Int) {
-        loadImage(stories[index].img, this, contentView, imageRequestListener)
+        ImageUtils.loadImage(stories[index].img, this, contentView, imageRequestListener)
+        for (i in index + 1 .. index + 2) {
+            if (i == stories.size) {
+                break
+            }
+            ImageUtils.preloadImage(stories[i].img, this, backedImageView)
+        }
     }
 
     private fun onRightSideClick() {

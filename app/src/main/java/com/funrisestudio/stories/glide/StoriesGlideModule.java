@@ -15,7 +15,7 @@ public class StoriesGlideModule extends AppGlideModule {
     @Override
     public void applyOptions(@NonNull Context context, GlideBuilder builder) {
         MemorySizeCalculator calculator = new MemorySizeCalculator.Builder(context)
-                .setMemoryCacheScreens(5)
+                .setMemoryCacheScreens(10)
                 .build();
         builder.setMemoryCache(new LruResourceCache(calculator.getMemoryCacheSize()));
     }

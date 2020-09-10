@@ -24,6 +24,12 @@ class StoriesContentView @JvmOverloads constructor(
     attrs: AttributeSet? = null
 ) : FrameLayout(context, attrs) {
 
+    /**
+     * Flag that indicated that this view received a resume command
+     * Without this command progress bars cannot be animated
+     */
+    private var isResumed = false
+
     init {
         isSaveEnabled = true
     }
@@ -46,7 +52,10 @@ class StoriesContentView @JvmOverloads constructor(
     private val imageRequestListener = ImageRequestListener()
     private var onImageRequestCompleted: (() -> Unit)? = null
 
-    fun setUp(stories: List<StoryContent>, storyDurationMillis: Long = DEF_STORY_DURATION_MILLIS) {
+    fun setUp(
+        stories: List<StoryContent>,
+        storyDurationMillis: Long = DEF_STORY_DURATION_MILLIS
+    ) {
         this.stories = stories
         progressBar?.let {
             removeView(it)
@@ -99,7 +108,9 @@ class StoriesContentView @JvmOverloads constructor(
         val progress = progressBar ?: return
         if (progress.hasNext()) {
             progress.completeCurrent()
-            onImageRequestCompleted = progress::next
+            onImageRequestCompleted = {
+                progress.next(animate = isResumed)
+            }
             renderContent(progress.nextIndex())
         } else {
             progress.resume()
@@ -155,7 +166,12 @@ class StoriesContentView @JvmOverloads constructor(
     }
 
     fun resume() {
+        isResumed = true
         progressBar?.resume()
+    }
+
+    fun pause() {
+        progressBar?.pause()
     }
 
     override fun onSaveInstanceState(): Parcelable? {

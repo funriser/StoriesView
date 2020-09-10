@@ -91,6 +91,8 @@ class ProgressView(
         }
     }
 
+    fun isStarted() = progressAnimator.isStarted()
+
     class ProgressAnimator(
         private val durationMillis: Long
     ) : ProgressControl, ValueAnimator.AnimatorUpdateListener {
@@ -130,6 +132,8 @@ class ProgressView(
             onEnd = null
             animator?.cancel()
         }
+
+        fun isStarted() = animator?.isStarted == true
 
         override fun onAnimationUpdate(animation: ValueAnimator) {
             progressListener?.invoke(animation.animatedValue as Float)

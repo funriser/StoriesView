@@ -34,6 +34,15 @@ class StoriesFragment: Fragment() {
 
     override fun onResume() {
         super.onResume()
+        resumeProgress()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        storiesView.pause()
+    }
+
+    fun resumeProgress() {
         storiesView.resume()
     }
 

@@ -48,8 +48,17 @@ class StoriesSequenceView @JvmOverloads constructor(
         activeProgressView?.pause()
     }
 
+    /**
+     * Start animation if not already started else resume
+     */
     fun resume() {
-        activeProgressView?.resume()
+        activeProgressView?.let {
+            if (!it.isStarted()) {
+                startActiveProgressView()
+            } else {
+                it.resume()
+            }
+        }
     }
 
     fun hasNext() = storiesIterator.hasNext()
@@ -60,9 +69,11 @@ class StoriesSequenceView @JvmOverloads constructor(
         activeProgressView?.setCompleted()
     }
 
-    fun next() {
+    fun next(animate: Boolean = true) {
         activeProgressView = storiesIterator.next()
-        activeProgressView?.start(onCompleted = ::onStoryCompleted)
+        if (animate) {
+            startActiveProgressView()
+        }
     }
 
     fun hasPrevious() = storiesIterator.hasPrevious()
@@ -75,10 +86,14 @@ class StoriesSequenceView @JvmOverloads constructor(
 
     fun previous() {
         activeProgressView = storiesIterator.previous()
-        activeProgressView?.start(onCompleted = ::onStoryCompleted)
+        startActiveProgressView()
     }
 
     fun currentIndex() = storiesIterator.cursor
+
+    private fun startActiveProgressView() {
+        activeProgressView?.start(onCompleted = ::onStoryCompleted)
+    }
 
     /**
      * Set active progress bar at index

@@ -2,6 +2,8 @@ package com.funrisestudio.stories
 
 import android.content.Context
 import android.graphics.drawable.Drawable
+import android.os.Bundle
+import android.os.Parcelable
 import android.util.AttributeSet
 import android.util.Log
 import android.view.MotionEvent
@@ -21,6 +23,10 @@ class StoriesContentView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null
 ) : FrameLayout(context, attrs) {
+
+    init {
+        isSaveEnabled = true
+    }
 
     private val backedImageView: ImageView = ImageView(context).also {
         it.layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
@@ -111,6 +117,13 @@ class StoriesContentView @JvmOverloads constructor(
         }
     }
 
+    private fun dispatchAtIndex(index: Int) {
+        check(index >= 0)
+        val progress = progressBar ?: return
+        progress.setCurrentItem(index - 1)
+        dispatchNext()
+    }
+
     private fun renderContent(index: Int) {
         ImageUtils.loadImage(stories[index].img, this, contentView, imageRequestListener)
         for (i in index + 1 .. index + 2) {
@@ -141,6 +154,30 @@ class StoriesContentView @JvmOverloads constructor(
         progressBar?.resume()
     }
 
+    fun resume() {
+        progressBar?.resume()
+    }
+
+    override fun onSaveInstanceState(): Parcelable? {
+        return Bundle().apply {
+            putParcelable(KEY_SUPER_STATE, super.onSaveInstanceState())
+            putInt(KEY_INDEX, progressBar?.currentIndex()?:-1)
+        }
+    }
+
+    override fun onRestoreInstanceState(state: Parcelable?) {
+        if (state == null) {
+            return super.onRestoreInstanceState(state)
+        }
+        val bundle = state as Bundle
+        val superState = bundle.getParcelable<Parcelable>(KEY_SUPER_STATE)
+        super.onRestoreInstanceState(superState)
+        val savedIndex = bundle.getInt(KEY_INDEX, -1)
+        if (savedIndex != -1) {
+            dispatchAtIndex(savedIndex)
+        }
+    }
+
     inner class ImageRequestListener: RequestListener<Drawable> {
         override fun onLoadFailed(
             e: GlideException?,
@@ -162,6 +199,11 @@ class StoriesContentView @JvmOverloads constructor(
             onImageRequestCompleted?.invoke()
             return false
         }
+    }
+
+    companion object {
+        private const val KEY_SUPER_STATE = "super_state"
+        private const val KEY_INDEX = "key_index"
     }
 
 }

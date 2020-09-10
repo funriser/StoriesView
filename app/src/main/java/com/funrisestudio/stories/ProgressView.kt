@@ -9,7 +9,6 @@ import android.graphics.RectF
 import android.view.View
 import androidx.core.animation.addListener
 import androidx.core.content.ContextCompat
-import androidx.core.view.doOnLayout
 
 @SuppressLint("ViewConstructor")
 class ProgressView(
@@ -79,13 +78,17 @@ class ProgressView(
     }
 
     fun setCompleted() {
-        progressAnimator.cancel()
-        progressWidth = progressAnimator.width
+        doOnLayout {
+            progressAnimator.cancel()
+            progressWidth = progressAnimator.width
+        }
     }
 
     fun setUncompleted() {
-        progressAnimator.cancel()
-        progressWidth = 0f
+        doOnLayout {
+            progressAnimator.cancel()
+            progressWidth = 0f
+        }
     }
 
     class ProgressAnimator(

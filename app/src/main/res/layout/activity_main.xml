@@ -6,9 +6,9 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <com.funrisestudio.stories.StoriesContentView
-        android:id="@+id/vStories"
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/storiesPager"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent" />
 
 </FrameLayout>

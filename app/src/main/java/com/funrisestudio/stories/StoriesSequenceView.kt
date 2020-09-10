@@ -78,6 +78,32 @@ class StoriesSequenceView @JvmOverloads constructor(
         activeProgressView?.start(onCompleted = ::onStoryCompleted)
     }
 
+    fun currentIndex() = storiesIterator.cursor
+
+    /**
+     * Set active progress bar at index
+     * Marks all bars before the active one as completed
+     * Ensures that progress bar at the index and all bars
+     * after index are marked as uncompleted
+     *
+     * @param index - the index of an active progress bar
+     */
+    fun setCurrentItem(index: Int) {
+        var i = 0
+        StoriesIterator().forEach {
+            if (i < index) {
+                it.setCompleted()
+            } else {
+                if (i == index) {
+                    activeProgressView = it
+                }
+                it.setUncompleted()
+            }
+            i ++
+        }
+        storiesIterator.cursor = index
+    }
+
     private fun onStoryCompleted() {
         onStoryCompleted?.invoke()
     }

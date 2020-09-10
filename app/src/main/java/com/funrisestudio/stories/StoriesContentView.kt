@@ -165,9 +165,17 @@ class StoriesContentView @JvmOverloads constructor(
         progressBar?.resume()
     }
 
+    /**
+     * Start animation if not already started else resume
+     */
     fun resume() {
+        val progress = progressBar?: return
+        if (!progress.isStarted()) {
+           progress.start()
+        } else {
+            progress.resume()
+        }
         isResumed = true
-        progressBar?.resume()
     }
 
     fun pause() {

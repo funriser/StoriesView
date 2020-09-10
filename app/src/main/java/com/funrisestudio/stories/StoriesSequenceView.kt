@@ -44,21 +44,20 @@ class StoriesSequenceView @JvmOverloads constructor(
         }
     }
 
+    fun start() {
+        startActiveProgressView()
+    }
+
+    fun isStarted(): Boolean {
+        return activeProgressView?.isStarted() == true
+    }
+
     fun pause() {
         activeProgressView?.pause()
     }
 
-    /**
-     * Start animation if not already started else resume
-     */
     fun resume() {
-        activeProgressView?.let {
-            if (!it.isStarted()) {
-                startActiveProgressView()
-            } else {
-                it.resume()
-            }
-        }
+        activeProgressView?.resume()
     }
 
     fun hasNext() = storiesIterator.hasNext()

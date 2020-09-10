@@ -1,5 +1,6 @@
 package com.funrisestudio.stories
 
+import android.animation.Animator
 import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.content.Context
@@ -7,7 +8,6 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.RectF
 import android.view.View
-import androidx.core.animation.addListener
 import androidx.core.content.ContextCompat
 
 @SuppressLint("ViewConstructor")
@@ -109,12 +109,26 @@ class ProgressView(
 
         private var onEnd: (() -> Unit)? = null
 
+        private val animatorListener = object : Animator.AnimatorListener {
+            override fun onAnimationEnd(animator: Animator) {
+                onEnd?.invoke()
+            }
+            override fun onAnimationRepeat(animator: Animator) {
+            }
+            override fun onAnimationCancel(animator: Animator) {
+            }
+            override fun onAnimationStart(animator: Animator) {
+            }
+        }
+
         override fun start(onCompleted: (() -> Unit)?) {
             onEnd = onCompleted
             checkNotNull(animator) {  "Set progress width to use animator" }
             animator?.apply {
+                removeAllUpdateListeners()
+                removeListener(animatorListener)
                 addUpdateListener(this@ProgressAnimator)
-                addListener(onEnd = { onEnd?.invoke() })
+                addListener(animatorListener)
                 start()
             }
         }

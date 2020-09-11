@@ -1,8 +1,10 @@
 package com.funrisestudio.stories
 
 import android.content.Context
+import android.graphics.drawable.ColorDrawable
 import android.util.AttributeSet
 import android.widget.FrameLayout
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
 import androidx.viewpager2.widget.ViewPager2
@@ -31,6 +33,8 @@ class StoriesView @JvmOverloads constructor(
 
     init {
         addView(storiesPager)
+        val bgColor = ContextCompat.getColor(context, R.color.black)
+        background = ColorDrawable(bgColor)
     }
 
     fun init(activity: FragmentActivity) {

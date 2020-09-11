@@ -68,11 +68,8 @@ class StoriesSetProgressBar @JvmOverloads constructor(
         activeProgressView?.setCompleted()
     }
 
-    fun next(animate: Boolean = true) {
+    fun next() {
         activeProgressView = storiesIterator.next()
-        if (animate) {
-            startActiveProgressView()
-        }
     }
 
     fun hasPrevious() = storiesIterator.hasPrevious()
@@ -85,7 +82,6 @@ class StoriesSetProgressBar @JvmOverloads constructor(
 
     fun previous() {
         activeProgressView = storiesIterator.previous()
-        startActiveProgressView()
     }
 
     fun currentIndex() = storiesIterator.cursor

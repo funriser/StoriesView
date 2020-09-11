@@ -7,10 +7,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 
-class StoriesFragment: Fragment() {
+class StoriesSetFragment: Fragment() {
 
     private lateinit var stories: List<StoryContent>
-    private lateinit var storiesView: StoriesContentView
+    private lateinit var storiesSetView: StoriesSetView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -22,14 +22,14 @@ class StoriesFragment: Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_stories, container, false).also {
-            storiesView = it as StoriesContentView
+        return inflater.inflate(R.layout.fragment_stories_set, container, false).also {
+            storiesSetView = it as StoriesSetView
         }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        storiesView.setUp(stories)
+        storiesSetView.setUp(stories)
     }
 
     override fun onResume() {
@@ -39,7 +39,7 @@ class StoriesFragment: Fragment() {
         var parentView = view?.parent
         while (parentView != null) {
             if (parentView is StoriesNavigationListener) {
-                storiesView.storiesNavigationListener = parentView
+                storiesSetView.storiesNavigationListener = parentView
                 break
             }
             parentView = parentView.parent
@@ -49,11 +49,11 @@ class StoriesFragment: Fragment() {
 
     override fun onPause() {
         super.onPause()
-        storiesView.pause()
+        storiesSetView.pause()
     }
 
     fun resumeProgress() {
-        storiesView.resume()
+        storiesSetView.resume()
     }
 
     override fun onDestroyView() {
@@ -65,8 +65,8 @@ class StoriesFragment: Fragment() {
 
         private const val KEY_STORIES = "key_stories"
 
-        fun newInstance(stories: List<StoryContent>): StoriesFragment {
-            return StoriesFragment().apply {
+        fun newInstance(stories: List<StoryContent>): StoriesSetFragment {
+            return StoriesSetFragment().apply {
                 arguments = Bundle().apply {
                     putParcelableArrayList(KEY_STORIES, ArrayList(stories))
                 }

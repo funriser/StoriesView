@@ -13,7 +13,7 @@ class StoriesAdapter(activity: FragmentActivity) : FragmentStateAdapter(activity
         }
 
     override fun createFragment(position: Int): Fragment =
-        StoriesFragment.newInstance(stories[position])
+        StoriesSetFragment.newInstance(stories[position])
 
     override fun getItemCount(): Int = stories.size
 

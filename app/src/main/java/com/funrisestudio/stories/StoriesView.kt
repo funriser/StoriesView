@@ -73,7 +73,7 @@ class StoriesView @JvmOverloads constructor(
             if (state == 0) {
                 val currentItemTag = "f" + storiesPager.currentItem
                 val currFragment =
-                    fragmentManager?.findFragmentByTag(currentItemTag) as StoriesFragment?
+                    fragmentManager?.findFragmentByTag(currentItemTag) as StoriesSetFragment?
                 currFragment?.resumeProgress()
             }
         }

@@ -19,7 +19,7 @@ private const val DEF_STORY_DURATION_MILLIS = 10 * 1000L
 private const val LONG_PRESS_DELAY_MILLIS = 800L
 private const val TAG = "StoriesContent"
 
-class StoriesContentView @JvmOverloads constructor(
+class StoriesSetView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null
 ) : FrameLayout(context, attrs) {
@@ -46,7 +46,7 @@ class StoriesContentView @JvmOverloads constructor(
         addView(it)
     }
     private var pressTimestampMillis = 0L
-    private var progressBar: StoriesSequenceView? = null
+    private var progressBar: StoriesSetProgressBar? = null
     private var stories: List<StoryContent> = emptyList()
 
     private val imageRequestListener = ImageRequestListener()
@@ -67,7 +67,7 @@ class StoriesContentView @JvmOverloads constructor(
     }
 
     private fun initProgressBar(storiesCount: Int, storyDurationMillis: Long) {
-        progressBar = StoriesSequenceView(context).apply {
+        progressBar = StoriesSetProgressBar(context).apply {
             layoutParams = LayoutParams(
                 LayoutParams.MATCH_PARENT,
                 context.resources.getDimensionPixelSize(R.dimen.height_stories)

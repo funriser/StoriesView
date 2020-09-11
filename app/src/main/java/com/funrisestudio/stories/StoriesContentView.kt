@@ -52,6 +52,8 @@ class StoriesContentView @JvmOverloads constructor(
     private val imageRequestListener = ImageRequestListener()
     private var onImageRequestCompleted: (() -> Unit)? = null
 
+    var onStoryCompleted: (() -> Unit)? = null
+
     fun setUp(
         stories: List<StoryContent>,
         storyDurationMillis: Long = DEF_STORY_DURATION_MILLIS
@@ -113,7 +115,7 @@ class StoriesContentView @JvmOverloads constructor(
             }
             renderContent(progress.nextIndex())
         } else {
-            progress.resume()
+            onStoryCompleted?.invoke()
         }
     }
 

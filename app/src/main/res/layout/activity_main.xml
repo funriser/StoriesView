@@ -6,8 +6,8 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <androidx.viewpager2.widget.ViewPager2
-        android:id="@+id/storiesPager"
+    <com.funrisestudio.stories.StoriesView
+        android:id="@+id/vStories"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 

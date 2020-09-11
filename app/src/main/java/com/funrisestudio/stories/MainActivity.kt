@@ -3,20 +3,12 @@ package com.funrisestudio.stories
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.viewpager2.widget.ViewPager2
-import com.funrisestudio.stories.transformer.StoryPagerTransformer
 
 class MainActivity : AppCompatActivity() {
 
-    private val storiesPager: ViewPager2 by lazy {
-        findViewById(R.id.storiesPager)
+    private val vStories: StoriesView by lazy {
+        findViewById(R.id.vStories)
     }
-
-    /**
-     * A callback that tracks if user finished swiping the story page
-     * to resume playing content of the current page
-     */
-    private val storiesPagerCallback = StoriesPagerCallback()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,8 +18,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initStoriesView() {
-        storiesPager.adapter = StoriesAdapter(this).apply {
-            stories = listOf(
+        vStories.init(this)
+        vStories.setStories(
+            listOf(
                 //1
                 listOf(
                     StoryContent("https://wallpaperaccess.com/full/695978.jpg"),
@@ -65,25 +58,7 @@ class MainActivity : AppCompatActivity() {
                     StoryContent("https://i.pinimg.com/originals/d3/f2/e6/d3f2e6f4da4bfc47a96a0e8aae1fffd4.jpg")
                 )
             )
-        }
-        storiesPager.registerOnPageChangeCallback(storiesPagerCallback)
-        storiesPager.setPageTransformer(StoryPagerTransformer())
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        storiesPager.unregisterOnPageChangeCallback(storiesPagerCallback)
-    }
-
-    inner class StoriesPagerCallback: ViewPager2.OnPageChangeCallback() {
-        override fun onPageScrollStateChanged(state: Int) {
-            if (state == 0) {
-                val currentItemTag = "f" + storiesPager.currentItem
-                val currFragment =
-                    supportFragmentManager.findFragmentByTag(currentItemTag) as StoriesFragment
-                currFragment.resumeProgress()
-            }
-        }
+        )
     }
 
 }

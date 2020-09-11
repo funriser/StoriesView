@@ -99,6 +99,7 @@ class StoriesSetProgressBar @JvmOverloads constructor(
      * @param index - the index of an active progress bar
      */
     fun setCurrentItem(index: Int) {
+        activeProgressView = null
         var i = 0
         StoriesIterator().forEach {
             if (i < index) {

@@ -52,7 +52,7 @@ class StoriesContentView @JvmOverloads constructor(
     private val imageRequestListener = ImageRequestListener()
     private var onImageRequestCompleted: (() -> Unit)? = null
 
-    var onStoryCompleted: (() -> Unit)? = null
+    var storiesNavigationListener: StoriesNavigationListener? = null
 
     fun setUp(
         stories: List<StoryContent>,
@@ -115,7 +115,11 @@ class StoriesContentView @JvmOverloads constructor(
             }
             renderContent(progress.nextIndex())
         } else {
-            onStoryCompleted?.invoke()
+            storiesNavigationListener?.toNextStoriesSet()
+            //progress bar is paused at this moment because of user's touch interaction
+            //We need to resume progress in the case when this is last story in the set
+            //and navigation did not happen in previous call
+            progress.resume()
         }
     }
 
@@ -126,6 +130,10 @@ class StoriesContentView @JvmOverloads constructor(
             onImageRequestCompleted = progress::previous
             renderContent(progress.previousIndex())
         } else {
+            storiesNavigationListener?.toPrevStoriesSet()
+            //progress bar is paused at this moment because of user's touch interaction
+            //We need to resume progress in the case when this is first story in the set
+            //and navigation did not happen in previous call
             progress.resume()
         }
     }

@@ -30,22 +30,20 @@ class StoriesFragment: Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         storiesView.setUp(stories)
-        storiesView.onStoryCompleted = {
-            //find parent view that listens for story completed event
-            //and invoke callback
-            var parentView = view.parent
-            while (parentView != null) {
-                if (parentView is OnStoryCompletedListener) {
-                    parentView.onStoryCompleted()
-                    break
-                }
-                parentView = parentView.parent
-            }
-        }
     }
 
     override fun onResume() {
         super.onResume()
+        //find parent view that listens for story completed event
+        //and invoke callback
+        var parentView = view?.parent
+        while (parentView != null) {
+            if (parentView is StoriesNavigationListener) {
+                storiesView.storiesNavigationListener = parentView
+                break
+            }
+            parentView = parentView.parent
+        }
         resumeProgress()
     }
 

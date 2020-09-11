@@ -11,7 +11,7 @@ import com.funrisestudio.stories.transformer.StoryPagerTransformer
 class StoriesView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null
-) : FrameLayout(context, attrs), OnStoryCompletedListener {
+) : FrameLayout(context, attrs), StoriesNavigationListener {
 
     private val storiesPager = ViewPager2(context).apply {
         layoutParams = LayoutParams(
@@ -53,11 +53,18 @@ class StoriesView @JvmOverloads constructor(
         storiesPager.unregisterOnPageChangeCallback(storiesPagerCallback)
     }
 
-    override fun onStoryCompleted() {
+    override fun toNextStoriesSet() {
         val storiesAdapter = adapter?:return
         val currPosition = storiesPager.currentItem
         if (currPosition + 1 < storiesAdapter.itemCount) {
             storiesPager.setCurrentItem(currPosition + 1, true)
+        }
+    }
+
+    override fun toPrevStoriesSet() {
+        val currPosition = storiesPager.currentItem
+        if (currPosition - 1 >= 0) {
+            storiesPager.setCurrentItem(currPosition - 1, true)
         }
     }
 

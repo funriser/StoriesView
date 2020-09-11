@@ -30,6 +30,8 @@ class StoriesSetView @JvmOverloads constructor(
      */
     private var isResumed = false
 
+    private var isLoading = false
+
     init {
         isSaveEnabled = true
     }
@@ -111,9 +113,16 @@ class StoriesSetView @JvmOverloads constructor(
         if (progress.hasNext()) {
             progress.completeCurrent()
             onImageRequestCompleted = {
-                progress.next(animate = isResumed)
+                post {
+                    isLoading = false
+                    if (isResumed) {
+                        progress.start()
+                    }
+                }
             }
+            isLoading = true
             renderContent(progress.nextIndex())
+            progress.next()
         } else {
             storiesNavigationListener?.toNextStoriesSet()
             //progress bar is paused at this moment because of user's touch interaction
@@ -127,8 +136,18 @@ class StoriesSetView @JvmOverloads constructor(
         val progress = progressBar ?: return
         if (progress.hasPrevious()) {
             progress.unCompleteCurrent()
-            onImageRequestCompleted = progress::previous
+            onImageRequestCompleted = {
+                post {
+                    isLoading = false
+                    if (isResumed) {
+                        progress.start()
+                    }
+                }
+            }
+            isLoading = true
             renderContent(progress.previousIndex())
+            progress.previous()
+            progress.unCompleteCurrent()
         } else {
             storiesNavigationListener?.toPrevStoriesSet()
             //progress bar is paused at this moment because of user's touch interaction
@@ -146,8 +165,14 @@ class StoriesSetView @JvmOverloads constructor(
     }
 
     private fun renderContent(index: Int) {
-        ImageUtils.loadImage(stories[index].img, this, contentView, imageRequestListener)
-        for (i in index + 1 .. index + 2) {
+        ImageUtils.loadImage(
+            img = stories[index].img,
+            parent = this,
+            target = contentView,
+            placeholderId = R.drawable.story_placeholder,
+            requestListener = imageRequestListener
+        )
+        for (i in index + 1..index + 2) {
             if (i == stories.size) {
                 break
             }
@@ -179,9 +204,9 @@ class StoriesSetView @JvmOverloads constructor(
      * Start animation if not already started else resume
      */
     fun resume() {
-        val progress = progressBar?: return
-        if (!progress.isStarted()) {
-           progress.start()
+        val progress = progressBar ?: return
+        if (!progress.isStarted() && !isLoading) {
+            progress.start()
         } else {
             progress.resume()
         }
@@ -195,7 +220,7 @@ class StoriesSetView @JvmOverloads constructor(
     override fun onSaveInstanceState(): Parcelable? {
         return Bundle().apply {
             putParcelable(KEY_SUPER_STATE, super.onSaveInstanceState())
-            putInt(KEY_INDEX, progressBar?.currentIndex()?:-1)
+            putInt(KEY_INDEX, progressBar?.currentIndex() ?: -1)
         }
     }
 
@@ -212,7 +237,7 @@ class StoriesSetView @JvmOverloads constructor(
         }
     }
 
-    inner class ImageRequestListener: RequestListener<Drawable> {
+    inner class ImageRequestListener : RequestListener<Drawable> {
         override fun onLoadFailed(
             e: GlideException?,
             model: Any?,

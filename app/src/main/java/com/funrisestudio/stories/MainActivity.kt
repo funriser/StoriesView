@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.viewpager2.widget.ViewPager2
+import com.funrisestudio.stories.transformer.StoryPagerTransformer
 
 class MainActivity : AppCompatActivity() {
 
@@ -66,6 +67,7 @@ class MainActivity : AppCompatActivity() {
             )
         }
         storiesPager.registerOnPageChangeCallback(storiesPagerCallback)
+        storiesPager.setPageTransformer(StoryPagerTransformer())
     }
 
     override fun onDestroy() {

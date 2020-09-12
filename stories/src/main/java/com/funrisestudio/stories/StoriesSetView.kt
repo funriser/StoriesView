@@ -15,7 +15,7 @@ import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 
-private const val DEF_STORY_DURATION_MILLIS = 10 * 1000L
+private const val DEF_STORY_DURATION_MILLIS = 5 * 1000L
 private const val LONG_PRESS_DELAY_MILLIS = 800L
 private const val TAG = "StoriesContent"
 
@@ -74,8 +74,9 @@ class StoriesSetView @JvmOverloads constructor(
                 LayoutParams.MATCH_PARENT,
                 context.resources.getDimensionPixelSize(R.dimen.height_stories)
             ).apply {
-                val sideMrg = context.resources.getDimensionPixelSize(R.dimen.mrg_story_progress)
-                setMargins(sideMrg, sideMrg, sideMrg, 0)
+                val topMrg = context.resources.getDimensionPixelSize(R.dimen.mrg_progress_top)
+                val sideMrg = context.resources.getDimensionPixelSize(R.dimen.mrg_progress_bar_side)
+                setMargins(sideMrg, topMrg, sideMrg, 0)
             }
             setUp(storiesCount, storyDurationMillis)
             onStoryCompleted = ::dispatchNext

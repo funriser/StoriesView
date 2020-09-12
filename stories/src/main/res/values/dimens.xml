@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="size_corner">2dp</dimen>
-    <dimen name="mrg_story_progress">2dp</dimen>
-    <dimen name="height_stories">5dp</dimen>
+    <dimen name="mrg_progress_bar_side">5dp</dimen>
+    <dimen name="mrg_progress_spacing">2dp</dimen>
+    <dimen name="mrg_progress_top">8dp</dimen>
+    <dimen name="height_stories">2dp</dimen>
 </resources>

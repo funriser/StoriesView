@@ -3,7 +3,7 @@ package com.funrisestudio.stories.transformer
 import android.view.View
 
 class StoryPagerTransformer(
-    private val distanceMultiplier: Int = 20
+    private val distanceMultiplier: Int = 15
 ): BaseTransformer() {
 
     public override val isPagingEnabled: Boolean = true

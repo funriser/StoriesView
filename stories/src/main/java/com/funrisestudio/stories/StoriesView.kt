@@ -7,6 +7,7 @@ import android.widget.FrameLayout
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
+import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import com.funrisestudio.stories.transformer.StoryPagerTransformer
 
@@ -19,6 +20,8 @@ class StoriesView @JvmOverloads constructor(
         layoutParams = LayoutParams(
             LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT
         )
+        //disable overscroll effect
+        (getChildAt(0) as RecyclerView).overScrollMode = RecyclerView.OVER_SCROLL_NEVER
         setPageTransformer(StoryPagerTransformer())
     }
 

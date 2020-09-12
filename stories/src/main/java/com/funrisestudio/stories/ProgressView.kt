@@ -24,7 +24,7 @@ class ProgressView(
         }
 
     private val bgColor = ContextCompat.getColor(context, R.color.grey)
-    private val progressColor = ContextCompat.getColor(context, R.color.black)
+    private val progressColor = ContextCompat.getColor(context, R.color.white)
 
     private val sizeCornerRatio = 0.8f
 

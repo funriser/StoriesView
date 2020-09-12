@@ -36,7 +36,7 @@ class StoriesSetProgressBar @JvmOverloads constructor(
                     weight = 1f
                     if (i != 0) {
                         leftMargin =
-                            context.resources.getDimensionPixelSize(R.dimen.mrg_story_progress)
+                            context.resources.getDimensionPixelSize(R.dimen.mrg_progress_spacing)
                     }
                 }
             }

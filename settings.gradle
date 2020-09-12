@@ -1,2 +1,3 @@
 rootProject.name = "Stories"
 include ':app'
+include ':stories'

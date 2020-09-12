@@ -25,6 +25,8 @@ class StoriesView @JvmOverloads constructor(
     private var fragmentManager: FragmentManager? = null
     private var adapter: StoriesAdapter? = null
 
+    private var onStoriesCompleted: (() -> Unit)? = null
+
     /**
      * A callback that tracks if user finished swiping the story page
      * to resume playing content of the current page
@@ -62,6 +64,8 @@ class StoriesView @JvmOverloads constructor(
         val currPosition = storiesPager.currentItem
         if (currPosition + 1 < storiesAdapter.itemCount) {
             storiesPager.setCurrentItem(currPosition + 1, true)
+        } else {
+            onStoriesCompleted?.invoke()
         }
     }
 
@@ -70,6 +74,15 @@ class StoriesView @JvmOverloads constructor(
         if (currPosition - 1 >= 0) {
             storiesPager.setCurrentItem(currPosition - 1, true)
         }
+    }
+
+    /**
+     * Set listener which will be invoked when user finishes watching all the stories
+     *
+     * @param listener listener function
+     */
+    fun setOnStoryCompletedListener(listener: () -> Unit) {
+        this.onStoriesCompleted = listener
     }
 
     inner class StoriesPagerCallback: ViewPager2.OnPageChangeCallback() {

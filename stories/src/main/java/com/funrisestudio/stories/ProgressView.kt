@@ -7,13 +7,17 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.RectF
+import android.os.Parcel
+import android.os.Parcelable
 import android.view.View
+import androidx.annotation.ColorInt
 import androidx.core.content.ContextCompat
 
 @SuppressLint("ViewConstructor")
 class ProgressView(
     context: Context,
     private var storyDuration: Long,
+    styling: Styling? = null,
     private val progressAnimator: ProgressAnimator = ProgressAnimator(storyDuration)
 ) : View(context), ProgressControl by progressAnimator {
 
@@ -23,23 +27,35 @@ class ProgressView(
             invalidate()
         }
 
-    private val bgColor = ContextCompat.getColor(context, R.color.grey)
-    private val progressColor = ContextCompat.getColor(context, R.color.white)
+    @ColorInt private val bgColor: Int
+    @ColorInt private val progressColor: Int
 
     private val sizeCornerRatio = 0.8f
 
-    private val bgPaint = fillPaint().apply {
-        color = bgColor
-    }
-    private val progressPaint = fillPaint().apply {
-        color = progressColor
-    }
+    private val bgPaint: Paint
+    private val progressPaint: Paint
 
     private lateinit var bgRect: RectF
     private lateinit var progressRect: RectF
     private lateinit var progressClipRect: RectF
 
     init {
+        bgColor = if (styling != null && styling.progressBackgroundColor != -1) {
+            styling.progressBackgroundColor
+        } else {
+            ContextCompat.getColor(context, R.color.grey)
+        }
+        progressColor = if (styling != null && styling.progressBackgroundColor != -1) {
+            styling.progressColor
+        } else {
+            ContextCompat.getColor(context, R.color.white)
+        }
+        bgPaint = fillPaint().apply {
+            color = bgColor
+        }
+        progressPaint = fillPaint().apply {
+            color = progressColor
+        }
         progressAnimator.progressListener = ::onProgressChanged
     }
 
@@ -113,17 +129,20 @@ class ProgressView(
             override fun onAnimationEnd(animator: Animator) {
                 onEnd?.invoke()
             }
+
             override fun onAnimationRepeat(animator: Animator) {
             }
+
             override fun onAnimationCancel(animator: Animator) {
             }
+
             override fun onAnimationStart(animator: Animator) {
             }
         }
 
         override fun start(onCompleted: (() -> Unit)?) {
             onEnd = onCompleted
-            checkNotNull(animator) {  "Set progress width to use animator" }
+            checkNotNull(animator) { "Set progress width to use animator" }
             animator?.apply {
                 removeAllUpdateListeners()
                 removeListener(animatorListener)
@@ -134,7 +153,7 @@ class ProgressView(
         }
 
         override fun pause() {
-            checkNotNull(animator) {  "Set progress width to use animator" }
+            checkNotNull(animator) { "Set progress width to use animator" }
             animator?.pause()
         }
 
@@ -156,6 +175,37 @@ class ProgressView(
         private fun createAnimator(width: Float): ValueAnimator {
             return ValueAnimator.ofFloat(0f, width).apply {
                 duration = durationMillis
+            }
+        }
+
+    }
+
+    data class Styling(
+        @ColorInt val progressColor: Int = -1,
+        @ColorInt val progressBackgroundColor: Int = -1
+    ): Parcelable {
+
+        constructor(parcel: Parcel) : this(
+            parcel.readInt(),
+            parcel.readInt()
+        )
+
+        override fun writeToParcel(parcel: Parcel, flags: Int) {
+            parcel.writeInt(progressColor)
+            parcel.writeInt(progressBackgroundColor)
+        }
+
+        override fun describeContents(): Int {
+            return 0
+        }
+
+        companion object CREATOR : Parcelable.Creator<Styling> {
+            override fun createFromParcel(parcel: Parcel): Styling {
+                return Styling(parcel)
+            }
+
+            override fun newArray(size: Int): Array<Styling?> {
+                return arrayOfNulls(size)
             }
         }
 

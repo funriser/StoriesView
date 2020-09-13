@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="StoriesView">
+        <attr name="progressHeight" format="dimension"/>
+        <attr name="progressMarginTop" format="dimension"/>
+        <attr name="progressMarginLeft" format="dimension"/>
+        <attr name="progressMarginRight" format="dimension"/>
+        <attr name="progressSpacing" format="dimension"/>
+        <attr name="progressColor" format="color"/>
+        <attr name="progressBackgroundColor" format="color"/>
+    </declare-styleable>
+</resources>

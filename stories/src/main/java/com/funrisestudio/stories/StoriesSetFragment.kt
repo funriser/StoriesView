@@ -9,12 +9,16 @@ import androidx.fragment.app.Fragment
 
 class StoriesSetFragment: Fragment() {
 
+    private var storiesStyling: StoriesSetView.Styling? = null
+
     private lateinit var stories: List<StoryContent>
     private lateinit var storiesSetView: StoriesSetView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        stories = arguments!!.getParcelableArrayList(KEY_STORIES)!!
+        val args = requireNotNull(arguments)
+        stories = args.getParcelableArrayList(KEY_STORIES)!!
+        storiesStyling = args.getParcelable(KEY_STORIES_STYLING)
     }
 
     override fun onCreateView(
@@ -22,9 +26,10 @@ class StoriesSetFragment: Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_stories_set, container, false).also {
-            storiesSetView = it as StoriesSetView
+        storiesSetView = StoriesSetView(requireContext(), styling = storiesStyling).also {
+            it.id = R.id.vStories
         }
+        return storiesSetView
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -64,11 +69,18 @@ class StoriesSetFragment: Fragment() {
     companion object {
 
         private const val KEY_STORIES = "key_stories"
+        private const val KEY_STORIES_STYLING = "key_stories_styling"
 
-        fun newInstance(stories: List<StoryContent>): StoriesSetFragment {
+        fun newInstance(
+            stories: List<StoryContent>,
+            storiesStyling: StoriesSetView.Styling? = null
+        ): StoriesSetFragment {
             return StoriesSetFragment().apply {
                 arguments = Bundle().apply {
                     putParcelableArrayList(KEY_STORIES, ArrayList(stories))
+                    if (storiesStyling != null) {
+                        putParcelable(KEY_STORIES_STYLING, storiesStyling)
+                    }
                 }
             }
         }

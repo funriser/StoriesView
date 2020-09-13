@@ -3,6 +3,7 @@ package com.funrisestudio.stories
 import android.content.Context
 import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.os.Parcel
 import android.os.Parcelable
 import android.util.AttributeSet
 import android.util.Log
@@ -21,8 +22,14 @@ private const val TAG = "StoriesContent"
 
 class StoriesSetView @JvmOverloads constructor(
     context: Context,
-    attrs: AttributeSet? = null
+    attrs: AttributeSet? = null,
+    private val styling: Styling? = null
 ) : FrameLayout(context, attrs) {
+
+    private val progressHeight: Int
+    private val progressMarginTop: Int
+    private val progressMarginLeft: Int
+    private val progressMarginRight: Int
 
     /**
      * Flag that indicated that this view received a resume command
@@ -31,10 +38,6 @@ class StoriesSetView @JvmOverloads constructor(
     private var isResumed = false
 
     private var isLoading = false
-
-    init {
-        isSaveEnabled = true
-    }
 
     private val backedImageView: ImageView = ImageView(context).also {
         it.layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
@@ -56,6 +59,30 @@ class StoriesSetView @JvmOverloads constructor(
 
     var storiesNavigationListener: StoriesNavigationListener? = null
 
+    init {
+        isSaveEnabled = true
+        progressHeight = if (styling != null && styling.progressHeight != -1) {
+            styling.progressHeight
+        } else {
+            context.resources.getDimensionPixelSize(R.dimen.height_stories)
+        }
+        progressMarginTop = if (styling != null && styling.progressMarginTop != -1) {
+            styling.progressMarginTop
+        } else {
+            context.resources.getDimensionPixelSize(R.dimen.mrg_progress_top)
+        }
+        progressMarginLeft = if (styling != null && styling.progressMarginLeft != -1) {
+            styling.progressMarginLeft
+        } else {
+            context.resources.getDimensionPixelSize(R.dimen.mrg_progress_bar_side)
+        }
+        progressMarginRight = if (styling != null && styling.progressMarginRight != -1) {
+            styling.progressMarginRight
+        } else {
+            context.resources.getDimensionPixelSize(R.dimen.mrg_progress_bar_side)
+        }
+    }
+
     fun setUp(
         stories: List<StoryContent>,
         storyDurationMillis: Long = DEF_STORY_DURATION_MILLIS
@@ -69,14 +96,12 @@ class StoriesSetView @JvmOverloads constructor(
     }
 
     private fun initProgressBar(storiesCount: Int, storyDurationMillis: Long) {
-        progressBar = StoriesSetProgressBar(context).apply {
+        progressBar = StoriesSetProgressBar(context, styling = styling?.progressBarStyling).apply {
             layoutParams = LayoutParams(
                 LayoutParams.MATCH_PARENT,
-                context.resources.getDimensionPixelSize(R.dimen.height_stories)
+                progressHeight
             ).apply {
-                val topMrg = context.resources.getDimensionPixelSize(R.dimen.mrg_progress_top)
-                val sideMrg = context.resources.getDimensionPixelSize(R.dimen.mrg_progress_bar_side)
-                setMargins(sideMrg, topMrg, sideMrg, 0)
+                setMargins(progressMarginLeft, progressMarginTop, progressMarginRight, 0)
             }
             setUp(storiesCount, storyDurationMillis)
             onStoryCompleted = ::dispatchNext
@@ -259,6 +284,46 @@ class StoriesSetView @JvmOverloads constructor(
             onImageRequestCompleted?.invoke()
             return false
         }
+    }
+
+    data class Styling(
+        val progressHeight: Int = -1,
+        val progressMarginTop: Int = -1,
+        val progressMarginLeft: Int = -1,
+        val progressMarginRight: Int = -1,
+        val progressBarStyling: StoriesSetProgressBar.Styling? = null
+    ): Parcelable {
+
+        constructor(parcel: Parcel) : this(
+            parcel.readInt(),
+            parcel.readInt(),
+            parcel.readInt(),
+            parcel.readInt(),
+            parcel.readParcelable(StoriesSetProgressBar.Styling::class.java.classLoader)
+        )
+
+        override fun writeToParcel(parcel: Parcel, flags: Int) {
+            parcel.writeInt(progressHeight)
+            parcel.writeInt(progressMarginTop)
+            parcel.writeInt(progressMarginLeft)
+            parcel.writeInt(progressMarginRight)
+            parcel.writeParcelable(progressBarStyling, flags)
+        }
+
+        override fun describeContents(): Int {
+            return 0
+        }
+
+        companion object CREATOR : Parcelable.Creator<Styling> {
+            override fun createFromParcel(parcel: Parcel): Styling {
+                return Styling(parcel)
+            }
+
+            override fun newArray(size: Int): Array<Styling?> {
+                return arrayOfNulls(size)
+            }
+        }
+
     }
 
     companion object {

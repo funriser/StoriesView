@@ -16,6 +16,8 @@ class StoriesView @JvmOverloads constructor(
     attrs: AttributeSet? = null
 ) : FrameLayout(context, attrs), StoriesNavigationListener {
 
+    private lateinit var styling: StoriesSetView.Styling
+
     private val storiesPager = ViewPager2(context).apply {
         layoutParams = LayoutParams(
             LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT
@@ -40,10 +42,96 @@ class StoriesView @JvmOverloads constructor(
         addView(storiesPager)
         val bgColor = ContextCompat.getColor(context, R.color.black)
         background = ColorDrawable(bgColor)
+        setStyling(attrs)
+    }
+
+    /**
+     * Sets attributes from attribute set
+     * or applies default styling if attribute is not specified in the given set
+     *
+     * @param attrs attribute set passed to this view
+     */
+    private fun setStyling(attrs: AttributeSet?) {
+        val ta = if (attrs != null) {
+            context.theme.obtainStyledAttributes(attrs, R.styleable.StoriesView, 0, 0)
+        } else {
+            null
+        }
+        try {
+            val defProgressHeight = context.resources.getDimensionPixelSize(R.dimen.height_stories)
+            val progressHeight = ta?.getDimensionPixelSize(R.styleable.StoriesView_progressHeight, defProgressHeight)
+                ?: defProgressHeight
+
+            val defProgressMrgTop = context.resources.getDimensionPixelSize(R.dimen.mrg_progress_top)
+            val progressMarginTop = ta?.getDimensionPixelSize(R.styleable.StoriesView_progressMarginTop, defProgressMrgTop)
+                ?: defProgressMrgTop
+
+            val defProgressMrgLeft = context.resources.getDimensionPixelSize(R.dimen.mrg_progress_bar_side)
+            val progressMarginLeft = ta?.getDimensionPixelSize(R.styleable.StoriesView_progressMarginLeft, defProgressMrgLeft)
+                ?: defProgressMrgLeft
+
+            val defProgressMrgRight = context.resources.getDimensionPixelSize(R.dimen.mrg_progress_bar_side)
+            val progressMarginRight = ta?.getDimensionPixelSize(R.styleable.StoriesView_progressMarginRight, defProgressMrgRight)
+                ?: defProgressMrgRight
+
+            val defProgressSpacing = context.resources.getDimensionPixelSize(R.dimen.mrg_progress_spacing)
+            val progressSpacing = ta?.getDimensionPixelSize(R.styleable.StoriesView_progressSpacing, defProgressSpacing)
+                ?: defProgressSpacing
+
+            val defProgressColor = ContextCompat.getColor(context, R.color.white)
+            val progressColor = ta?.getColor(R.styleable.StoriesView_progressColor, defProgressColor)
+                ?: defProgressColor
+
+            val defProgressBgColor = ContextCompat.getColor(context, R.color.grey)
+            val progressBackgroundColor = ta?.getColor(R.styleable.StoriesView_progressBackgroundColor, defProgressBgColor)
+                ?: defProgressBgColor
+
+            styling = StoriesSetView.Styling(
+                progressHeight,
+                progressMarginTop,
+                progressMarginLeft,
+                progressMarginRight,
+                StoriesSetProgressBar.Styling(
+                    progressSpacing,
+                    ProgressView.Styling(
+                        progressColor,
+                        progressBackgroundColor
+                    )
+                )
+            )
+        } finally {
+            ta?.recycle()
+        }
+    }
+
+    fun init(
+        activity: FragmentActivity,
+        progressHeight: Int = styling.progressHeight,
+        progressMarginTop: Int = styling.progressMarginTop,
+        progressMarginLeft: Int = styling.progressMarginLeft,
+        progressMarginRight: Int = styling.progressMarginRight,
+        progressSpacing: Int = styling.progressBarStyling!!.progressSpacing,
+        progressColor: Int = styling.progressBarStyling!!.progressStyling!!.progressColor,
+        progressBackgroundColor: Int = styling.progressBarStyling!!.progressStyling!!.progressBackgroundColor
+    ) {
+        styling = StoriesSetView.Styling(
+            progressHeight,
+            progressMarginTop,
+            progressMarginLeft,
+            progressMarginRight,
+            StoriesSetProgressBar.Styling(
+                progressSpacing,
+                ProgressView.Styling(
+                    progressColor,
+                    progressBackgroundColor
+                )
+            )
+        )
+        init(activity)
     }
 
     fun init(activity: FragmentActivity) {
-        adapter = StoriesAdapter(activity)
+        adapter = StoriesAdapter(activity, styling)
         fragmentManager = activity.supportFragmentManager
         storiesPager.adapter = adapter
     }
@@ -63,7 +151,7 @@ class StoriesView @JvmOverloads constructor(
     }
 
     override fun toNextStoriesSet() {
-        val storiesAdapter = adapter?:return
+        val storiesAdapter = adapter ?: return
         val currPosition = storiesPager.currentItem
         if (currPosition + 1 < storiesAdapter.itemCount) {
             storiesPager.setCurrentItem(currPosition + 1, true)
@@ -88,7 +176,7 @@ class StoriesView @JvmOverloads constructor(
         this.onStoriesCompleted = listener
     }
 
-    inner class StoriesPagerCallback: ViewPager2.OnPageChangeCallback() {
+    inner class StoriesPagerCallback : ViewPager2.OnPageChangeCallback() {
         override fun onPageScrollStateChanged(state: Int) {
             if (state == 0) {
                 val currentItemTag = "f" + storiesPager.currentItem

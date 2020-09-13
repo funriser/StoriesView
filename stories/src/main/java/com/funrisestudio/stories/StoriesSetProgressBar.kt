@@ -1,13 +1,18 @@
 package com.funrisestudio.stories
 
 import android.content.Context
+import android.os.Parcel
+import android.os.Parcelable
 import android.util.AttributeSet
 import android.widget.LinearLayout
 
 class StoriesSetProgressBar @JvmOverloads constructor(
     context: Context,
-    attrs: AttributeSet? = null
+    attrs: AttributeSet? = null,
+    private val styling: Styling? = null
 ) : LinearLayout(context, attrs) {
+
+    private val progressSpacing: Int
 
     private var storiesCount = 0
     private var storyDurationMillis = 0L
@@ -19,6 +24,11 @@ class StoriesSetProgressBar @JvmOverloads constructor(
 
     init {
         orientation = HORIZONTAL
+        progressSpacing = if (styling != null && styling.progressSpacing != -1) {
+            styling.progressSpacing
+        } else {
+            context.resources.getDimensionPixelSize(R.dimen.mrg_progress_spacing)
+        }
     }
 
     fun setUp(storiesCount: Int, storyDurationMillis: Long) {
@@ -31,12 +41,11 @@ class StoriesSetProgressBar @JvmOverloads constructor(
     private fun initChildren() {
         removeAllViews()
         repeat(storiesCount) { i ->
-            val pv = ProgressView(context, storyDurationMillis).apply {
+            val pv = ProgressView(context, storyDurationMillis, styling?.progressStyling).apply {
                 layoutParams = LayoutParams(0, LayoutParams.MATCH_PARENT).apply {
                     weight = 1f
                     if (i != 0) {
-                        leftMargin =
-                            context.resources.getDimensionPixelSize(R.dimen.mrg_progress_spacing)
+                        leftMargin = progressSpacing
                     }
                 }
             }
@@ -132,6 +141,37 @@ class StoriesSetProgressBar @JvmOverloads constructor(
         override fun previous(): ProgressView =
             getChildAt(--cursor) as ProgressView? ?: throw IndexOutOfBoundsException()
         override fun previousIndex(): Int = cursor - 1
+
+    }
+
+    data class Styling(
+        val progressSpacing: Int = -1,
+        val progressStyling: ProgressView.Styling? = null
+    ): Parcelable {
+
+        constructor(parcel: Parcel) : this(
+            parcel.readInt(),
+            parcel.readParcelable(ProgressView.Styling::class.java.classLoader)
+        )
+
+        override fun writeToParcel(parcel: Parcel, flags: Int) {
+            parcel.writeInt(progressSpacing)
+            parcel.writeParcelable(progressStyling, flags)
+        }
+
+        override fun describeContents(): Int {
+            return 0
+        }
+
+        companion object CREATOR : Parcelable.Creator<Styling> {
+            override fun createFromParcel(parcel: Parcel): Styling {
+                return Styling(parcel)
+            }
+
+            override fun newArray(size: Int): Array<Styling?> {
+                return arrayOfNulls(size)
+            }
+        }
 
     }
 

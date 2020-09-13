@@ -104,6 +104,25 @@ class StoriesView @JvmOverloads constructor(
         }
     }
 
+    /**
+     * Initialize main components with given fragment activity.
+     * This method is required to call before starting to work with view.
+     *
+     * You can customize how the view looks like using styling params
+     *
+     * @param activity activity that will host StoriesView
+     *
+     * @param progressHeight The height of the progress bar
+     * @param progressMarginTop Margin between the top of the view and the top of progress bar
+     * @param progressMarginLeft Margin between the left side of the view
+     * and the left side of progress bar
+     * @param progressMarginRight Margin between the right side of the view
+     * and the right side of progress bar
+     * @param progressSpacing Progress bar consists of number of elements each one representing the
+     * progress of one story. This param defines margin between those elements.
+     * @param progressColor Color of the progress line
+     * @param progressBackgroundColor Color of the progress' line background
+     */
     fun init(
         activity: FragmentActivity,
         progressHeight: Int = styling.progressHeight,
@@ -130,12 +149,25 @@ class StoriesView @JvmOverloads constructor(
         init(activity)
     }
 
+    /**
+     * Initialize main components with given fragment activity.
+     * This method is required to call before starting to work with view.
+     *
+     * @param activity activity that will host StoriesView
+     */
     fun init(activity: FragmentActivity) {
         adapter = StoriesAdapter(activity, styling)
         fragmentManager = activity.supportFragmentManager
         storiesPager.adapter = adapter
     }
 
+    /**
+     * Bind a dataset that will be used to display images for stories
+     *
+     * @param stories List of lists containing StoryContent object.
+     * Two-dimension list needed because a stories view consists of pages
+     * and each of those pages contains multiple stories.
+     */
     fun setStories(stories: List<List<StoryContent>>) {
         adapter?.stories = stories
     }

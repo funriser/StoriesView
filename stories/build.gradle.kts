@@ -4,7 +4,10 @@ plugins {
     id("com.android.library")
     id("kotlin-android")
     id("kotlin-kapt")
+    id("com.github.dcendents.android-maven")
 }
+
+group = "com.github.funriser"
 
 android {
     compileSdkVersion(30)

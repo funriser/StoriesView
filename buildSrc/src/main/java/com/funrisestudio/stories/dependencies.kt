@@ -9,6 +9,7 @@ object Versions {
     object Plugins {
         const val androidGradle = "4.2.0-alpha10"
         const val kotlinGradle = kotlinVersion
+        const val maven = "2.1"
     }
     object AndroidX {
         const val core = "1.3.1"
@@ -20,6 +21,7 @@ object Versions {
 object Plugins {
     const val androidGradle = "com.android.tools.build:gradle:${Versions.Plugins.androidGradle}"
     const val kotlinGradle = "org.jetbrains.kotlin:kotlin-gradle-plugin:${Versions.Plugins.kotlinGradle}"
+    const val maven = "com.github.dcendents:android-maven-gradle-plugin:${Versions.Plugins.maven}"
 }
 
 object Libs {
